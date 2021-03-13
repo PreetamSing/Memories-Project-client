@@ -2,11 +2,11 @@ import React from 'react';
 import { Container } from "@material-ui/core";
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
-import Navbar from './components/Navbar/Navbar';
-import Home from './components/Home/Home';
-import Auth from './components/Auth/Auth';
-import GoogleSignUp from './components/Auth/GoogleSignUp';
-import GoogleSignIn from './components/Auth/GoogleSignIn';
+import Navbar from './memories/components/Navbar/Navbar';
+import Home from './memories/components/Home/Home';
+import Auth from './memories/components/Auth/Auth';
+import GoogleSignUp from './memories/components/Auth/GoogleSignUp';
+import GoogleSignIn from './memories/components/Auth/GoogleSignIn';
 
 function App() {
 

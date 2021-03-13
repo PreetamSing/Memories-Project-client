@@ -7,7 +7,7 @@ import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import moment from 'moment';
 import useStyles from './styles';
 import { useDispatch } from 'react-redux';
-import { deletePost, likePost } from "../../../actions/posts";
+import { deletePost, likePost } from "../../../../actions/posts";
 
 export default function Post({ post, setCurrentId }) {
     const classes = useStyles();

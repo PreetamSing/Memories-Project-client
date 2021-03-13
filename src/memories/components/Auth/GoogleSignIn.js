@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { Avatar, Button, Paper, Grid, Typography, Container } from "@material-ui/core";
@@ -8,56 +8,39 @@ import useStyles from './styles';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Input from './Input';
 import Icon from './icon';
-import { signup } from '../../actions/auth';
+import { signin } from '../../../actions/auth';
 
-const initialState = {
-    password: '',
-    confirmPassword: ''
-}
-
-const GoogleSignUp = () => {
+const GoogleSignIn = () => {
     const dispatch = useDispatch();
     const history = useHistory();
     const classes = useStyles();
     const [showPassword, setShowPassword] = useState(false);
-    const [formData, setFormData] = useState(initialState);
-    const [mismatchedPassword, setMismatchedPassword] = useState(true);
+    const [password, setPassword] = useState('');
 
     const handleShowPassword = () => setShowPassword((prevShowPassword) => !prevShowPassword);
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value })
+        setPassword( e.target.value )
     }
 
-    useEffect(() => {
-        if (formData.password === formData.confirmPassword) {
-            setMismatchedPassword(false);
-        }
-        else {
-            setMismatchedPassword(true);
-        }
-    }, [formData])
-
     const googleSuccess = async (res) => {
-        
+        // const result = res?.profileObj;
+        // const token = res?.tokenId;
+
         try {
-            dispatch(signup({
-                firstName: res?.profileObj?.givenName,
-                lastName: res?.profileObj?.familyName,
+            dispatch(signin({
                 email: res?.profileObj?.email,
-                password: formData.password,
-                confirmPassword: formData.confirmPassword,
+                password: password,
                 googleId: res?.profileObj?.googleId
             }, history));
-            // dispatch({ type: 'AUTH', data: { result, token } });
 
-            // history.push('/');
+            history.push('/');
         } catch (error) {
             console.log(error);
         }
     }
     const googleFailure = () => {
-        console.log("Google Sign Up was unsuccessful. Try Again Later");
+        console.log("Google Sign In was unsuccessful. Try Again Later");
     }
 
     return (
@@ -66,21 +49,16 @@ const GoogleSignUp = () => {
                 <Avatar className={classes.avatar}>
                     <LockOutlinedIcon />
                 </Avatar>
-                <Typography variant="h5">Sign Up</Typography>
+                <Typography variant="h5">Password Please!</Typography>
+                <Typography variant="p">It will be asked only the first time you login with Google</Typography>
                 <form className={classes.form} >
                     <Grid container spacing={2}>
                         <Input name="password" label="Password" handleChange={handleChange} type={showPassword ? "text" : "password"} handleShowPassword={handleShowPassword} />
-                        <Input name="confirmPassword" label="Repeat Password" handleChange={handleChange} type="password" />
                     </Grid>
-                    {mismatchedPassword && (
-                        <Typography variant="body2" color="error" component="p">
-                            Passwords don't match
-                        </Typography>
-                    )}
                     <GoogleLogin
                         clientId="87503749021-r5346llcckbcvvuho4lo6lqjdief2rot.apps.googleusercontent.com"
                         render={(renderProps) => (
-                            <Button className={classes.googleButton} color="primary" fullWidth onClick={renderProps.onClick} disabled={mismatchedPassword || !formData.password} startIcon={<Icon />} variant="contained" style={{ marginTop: "20px" }} >Sign Up</Button>
+                            <Button className={classes.googleButton} color="primary" fullWidth onClick={renderProps.onClick} disabled={renderProps.disabled} startIcon={<Icon />} variant="contained" style={{ marginTop: "20px" }} >Sign In</Button>
                         )}
                         onSuccess={googleSuccess}
                         onFailure={googleFailure}
@@ -92,4 +70,4 @@ const GoogleSignUp = () => {
     )
 }
 
-export default GoogleSignUp
+export default GoogleSignIn
