@@ -8,13 +8,13 @@ export const signin = (formData, history) => async (dispatch) => {
         const { data } = await api.signIn(formData);
 
         if (data?.message === "First Time Google Sign In") {
-            history.push('/auth/googlesignin');
+            history.push('/memories/auth/googlesignin');
             return;
         }
 
         dispatch({ type: AUTH, data });
 
-        history.push('/');
+        history.push('/memories');
     } catch (error) {
         console.log(error);
     }
@@ -28,7 +28,7 @@ export const signup = (formData, history) => async (dispatch) => {
 
         dispatch({ type: AUTH, data });
 
-        history.push('/');
+        history.push('/memories');
     } catch (error) {
         console.log(error);
     }

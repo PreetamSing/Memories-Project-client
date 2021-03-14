@@ -59,7 +59,8 @@ const Auth = () => {
             console.log(error);
         }
     }
-    const googleFailure = () => {
+    const googleFailure = (res) => {
+        console.log(res);
         console.log("Google Sign In was unsuccessful. Try Again Later");
     }
 
@@ -87,10 +88,10 @@ const Auth = () => {
                     <Button type="submit" fullWidth variant="contained" color="primary" className={classes.submit}>{isSignup ? "Sign Up" : "Sign In"}</Button>
                     {
                         isSignup ? (
-                            <Button component={Link} to="/auth/googlesignup" className={classes.googleButton} color="primary" fullWidth startIcon={<Icon />} variant="contained" >Google Sign Up</Button>
+                            <Button component={Link} to="/memories/auth/googlesignup" className={classes.googleButton} color="primary" fullWidth startIcon={<Icon />} variant="contained" >Google Sign Up</Button>
                         ) : (
                             <GoogleLogin
-                                clientId="87503749021-r5346llcckbcvvuho4lo6lqjdief2rot.apps.googleusercontent.com"
+                                clientId="87503749021-65pm7l1e3b3f7h2ln4irrv9rkui8sl44.apps.googleusercontent.com"
                                 render={(renderProps) => (
                                     <Button className={classes.googleButton} color="primary" fullWidth onClick={renderProps.onClick} disabled={renderProps.disabled} startIcon={<Icon />} variant="contained" >Google Sign In</Button>
                                 )}

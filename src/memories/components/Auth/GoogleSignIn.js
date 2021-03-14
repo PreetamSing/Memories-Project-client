@@ -34,7 +34,7 @@ const GoogleSignIn = () => {
                 googleId: res?.profileObj?.googleId
             }, history));
 
-            history.push('/');
+            history.push('/memories');
         } catch (error) {
             console.log(error);
         }
@@ -56,7 +56,7 @@ const GoogleSignIn = () => {
                         <Input name="password" label="Password" handleChange={handleChange} type={showPassword ? "text" : "password"} handleShowPassword={handleShowPassword} />
                     </Grid>
                     <GoogleLogin
-                        clientId="87503749021-r5346llcckbcvvuho4lo6lqjdief2rot.apps.googleusercontent.com"
+                        clientId="87503749021-65pm7l1e3b3f7h2ln4irrv9rkui8sl44.apps.googleusercontent.com"
                         render={(renderProps) => (
                             <Button className={classes.googleButton} color="primary" fullWidth onClick={renderProps.onClick} disabled={renderProps.disabled} startIcon={<Icon />} variant="contained" style={{ marginTop: "20px" }} >Sign In</Button>
                         )}

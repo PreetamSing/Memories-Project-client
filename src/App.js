@@ -2,7 +2,6 @@ import React from 'react';
 import { Container } from "@material-ui/core";
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
-import Navbar from './memories/components/Navbar/Navbar';
 import Home from './memories/components/Home/Home';
 import Auth from './memories/components/Auth/Auth';
 import GoogleSignUp from './memories/components/Auth/GoogleSignUp';
@@ -13,12 +12,11 @@ function App() {
   return (
     <BrowserRouter>
       <Container maxWidth="lg">
-        <Navbar />
         <Switch>
-          <Route path="/" exact component={Home} />
-          <Route path="/auth" exact component={Auth} />
-          <Route path="/auth/googlesignup" exact component={GoogleSignUp} />
-          <Route path="/auth/googlesignin" exact component={GoogleSignIn} />
+          <Route path="/memories/" exact component={Home} />
+          <Route path="/memories/auth" exact component={Auth} />
+          <Route path="/memories/auth/googlesignup" exact component={GoogleSignUp} />
+          <Route path="/memories/auth/googlesignin" exact component={GoogleSignIn} />
         </Switch>
       </Container>
     </BrowserRouter>
