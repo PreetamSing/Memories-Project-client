@@ -7,9 +7,17 @@ export default makeStyles((theme) => ({
     margin: '30px 0',
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-evenly',
     alignItems: 'center',
     padding: '10px 50px',
+  },
+  extraAppBar: {
+    borderRadius: 15,
+    margin: '30px 0',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
   },
   heading: {
     color: 'rgba(0,183,255, 1)',
@@ -25,7 +33,7 @@ export default makeStyles((theme) => ({
   },
   profile: {
     display: 'flex',
-    justifyContent: 'space-between',
+    justifyContent: 'space-evenly',
     width: '400px',
   },
   userName: {
