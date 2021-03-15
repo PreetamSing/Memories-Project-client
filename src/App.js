@@ -13,10 +13,10 @@ function App() {
     <BrowserRouter>
       <Container maxWidth="lg">
         <Switch>
-          <Route path="/memories/" exact component={Home} />
-          <Route path="/memories/auth" exact component={Auth} />
-          <Route path="/memories/auth/googlesignup" exact component={GoogleSignUp} />
-          <Route path="/memories/auth/googlesignin" exact component={GoogleSignIn} />
+          <Route path="/memories" exact component={Home} />
+          <Route path="/auth" exact component={Auth} />
+          <Route path="/auth/googlesignup" exact component={GoogleSignUp} />
+          <Route path="/auth/googlesignin" exact component={GoogleSignIn} />
         </Switch>
       </Container>
     </BrowserRouter>

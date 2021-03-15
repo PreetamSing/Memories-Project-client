@@ -8,7 +8,7 @@ export const signin = (formData, history) => async (dispatch) => {
         const { data } = await api.signIn(formData);
 
         if (data?.message === "First Time Google Sign In") {
-            history.push('/memories/auth/googlesignin');
+            history.push('/auth/googlesignin');
             return;
         }
 
