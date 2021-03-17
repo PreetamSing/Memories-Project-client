@@ -75,7 +75,7 @@ const GoogleSignUp = () => {
                         </Typography>
                     )}
                     <GoogleLogin
-                        clientId="87503749021-65pm7l1e3b3f7h2ln4irrv9rkui8sl44.apps.googleusercontent.com"
+                        clientId="73172241162-j09pe7bqh7u8g5ld3b56aec4bp2clkun.apps.googleusercontent.com"
                         render={(renderProps) => (
                             <Button className={classes.googleButton} color="primary" fullWidth onClick={renderProps.onClick} disabled={mismatchedPassword || !formData.password} startIcon={<Icon />} variant="contained" style={{ marginTop: "20px" }} >Sign Up</Button>
                         )}
