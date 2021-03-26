@@ -1,70 +1,60 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useHistory } from 'react-router-dom';
 import { AppBar, Typography, Avatar, Toolbar, Button } from '@material-ui/core';
-import { useDispatch } from 'react-redux';
-import decode from 'jwt-decode';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
+import Alert from '@material-ui/lab/Alert';
 
 import useStyles from './styles';
 import memories from '../../../images/memories.jpg';
-import { LOGOUT } from '../../../constants/actionTypes';
+import { useAuth } from "../../../contexts/AuthContext"
 
 const Navbar = () => {
     const classes = useStyles();
-    const [user, setUser] = useState(JSON.parse(localStorage.getItem('profile')));
-    const dispatch = useDispatch();
     const history = useHistory();
-    const location = useLocation();
+    const [error, setError] = useState('');
+    const { currentUser, logout } = useAuth()
     const matches = useMediaQuery('(max-width:600px)');
+
+    let displayName;
+    if (currentUser) {
+        displayName = currentUser?.displayName ? currentUser?.displayName : currentUser?.email;
+    }
+    if (displayName?.length > 10) {
+        displayName = displayName.split(/[^A-Z,a-z]/)[0];
+    }
 
     const AppTitle = () => (
         <div className={classes.brandContainer}>
-            <Typography component={Link} to="/memories" className={classes.heading} variant={matches?"h3":"h2"} align="center">Memories</Typography>
-            <img className={classes.image} src={memories} alt="memories" height={matches?"45":"60"} />
+            <Typography component={Link} to="/memories" className={classes.heading} variant={matches ? "h3" : "h2"} align="center">Memories</Typography>
+            <img className={classes.image} src={memories} alt="memories" height={matches ? "45" : "60"} />
         </div>
     );
     const ExtraNavbar = () => (
         <Toolbar className={classes.toolbar}>
-                {user ? (
-                    <div className={classes.profile}>
-                        <Avatar className={classes.purple} alt={user.result.name} src={user.result.imageUrl}>{user.result.name.charAt(0)}</Avatar>
-                        <Typography className={classes.userName} variant="h6">{user.result.name}</Typography>
-                        <Button variant="contained" color="secondary" onClick={logout}>Logout</Button>
-                    </div>
-                ) : (
-                    <Button component={Link} to="/auth" variant="contained" color="primary">Sign In</Button>
-                )}
-            </Toolbar>
+            {currentUser ? (
+                <div className={classes.profile}>
+                    <Avatar className={classes.purple} alt={currentUser.displayName} src={currentUser.photoURL}>{currentUser.email.charAt(0)}</Avatar>
+                    <Typography className={classes.userName} variant="h6">{displayName}</Typography>
+                    <Button variant="contained" color="secondary" onClick={handleLogout}>Logout</Button>
+                </div>
+            ) : (
+                <Button component={Link} to="/auth" variant="contained" color="primary">Sign In</Button>
+            )}
+        </Toolbar>
     );
 
-    const logout = () => {
-        dispatch({ type: LOGOUT });
-
-        history.push('/memories');
-
-        setUser(null);
-    };
-
-    useEffect(() => {
-        const token = user?.token;
-
-        // JWT...
-        if (token) {
-            const decodedToken = decode(token);
-
-            if (decodedToken.exp * 1000 < new Date().getTime()) logout();
-        }
-
-        setUser(JSON.parse(localStorage.getItem('profile')));
-    }, [location]);
+    const handleLogout = () => {
+        logout(setError, history);
+    }
 
     return (
         <>
-        <AppBar className={classes.appBar} position="static" color="inherit">
-            <AppTitle />
-            { !matches && <ExtraNavbar /> }
-        </AppBar>
-        { matches && <AppBar className={classes.extraAppBar} position="static" color="inherit"><ExtraNavbar /></AppBar> }
+            { error && <Alert severity="error" onClose={() => { setError('') }}>{error}</Alert>}
+            <AppBar className={classes.appBar} position="static" color="inherit">
+                <AppTitle />
+                {!matches && <ExtraNavbar />}
+            </AppBar>
+            { matches && <AppBar className={classes.extraAppBar} position="static" color="inherit"><ExtraNavbar /></AppBar>}
         </>
     )
 }

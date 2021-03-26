@@ -1,22 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import FileBase from 'react-file-base64';
 import { TextField, Button, Typography, Paper } from "@material-ui/core";
-import { useDispatch, useSelector } from 'react-redux';
+import Alert from '@material-ui/lab/Alert';
 
+import { useAuth } from "../../../contexts/AuthContext"
 import useStyles from './styles';
-import { createPost, updatePost } from '../../../actions/posts';
+import { usePost } from '../../../contexts/PostContext';
 
 export default function Form({ currentId, setCurrentId }) {
     const classes = useStyles();
-    const user = JSON.parse(localStorage.getItem('profile'));
+    const { posts, createPost, updatePost } = usePost();
+    const { currentUser } = useAuth();
+    const [error, setError] = useState('');
     const [postData, setPostData] = useState({
         title: '',
         message: '',
         tags: '',
         selectedFile: ''
     })
-    const post = useSelector(state => currentId ? state.posts.find((p) => p._id === currentId ) : null)
-    const dispatch = useDispatch()
+    const post = currentId ? posts.find((p) => p._id === currentId) : null;
 
     useEffect(() => {
         if (post) setPostData(post);
@@ -24,11 +26,12 @@ export default function Form({ currentId, setCurrentId }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        const displayName = currentUser?.displayName ? currentUser?.displayName : currentUser?.email.split(/[^A-Z,a-z]/)[0];
         if (currentId) {
-            dispatch(updatePost(currentId, { ...postData, name: user?.result?.name }));
+            updatePost(currentId, { ...postData, name: displayName }, setError);
         }
         else {
-            dispatch(createPost({ ...postData, name: user?.result?.name }));
+            createPost({ ...postData, name: displayName }, setError);
         }
         clear();
     }
@@ -43,18 +46,9 @@ export default function Form({ currentId, setCurrentId }) {
         })
     }
 
-    if (!user?.result?.name) {
-        return (
-            <Paper className={classes.paper}>
-                <Typography variant="h6" align="center">
-                    Please Sign In to create your own Memories and like other's Memories.
-                </Typography>
-            </Paper>
-        )
-    }
-
     return (
         <Paper className={classes.paper}>
+            {error && <Alert severity="error" onClose={() => { setError('') }}>{error}</Alert>}
             <form autoComplete="off" noValidate className={`${classes.root} ${classes.form}`} onSubmit={handleSubmit}>
             <Typography variant="h6">{ currentId ? "Editing" : "Creating" } a Memory!</Typography>
 

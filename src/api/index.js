@@ -1,23 +1,24 @@
 import axios from 'axios';
+import firebase from '../firebase';
 
-const API = axios.create({ baseURL: "http://localhost:5000/api"})
+const API = axios.create({ baseURL: "http://localhost:5000/api" });
 
-API.interceptors.request.use((req) => {
-    if (localStorage.getItem('profile')) {
-        req.headers.authorization = `Bearer ${JSON.parse(localStorage.getItem('profile')).token}`;
-    }
-
+API.interceptors.request.use(async (req) => {
+    await firebase.auth().currentUser?.getIdToken(/* forceRefresh */ true).then(async function (idToken) {
+        // Send token to your backend via HTTPS
+        req.headers.authorization = idToken;
+        // ...
+    }).catch(function (error) {
+        // Handle error
+        console.log(error);
+    });
     return req;
 });
 
 // const url = 'http://localhost:5000/posts';
 
-export const fetchPosts = () => API.get('/posts');
-export const createPost = (newPost) => API.post('/posts', newPost);
+export const fetchPosts = () => API.post('/posts');
+export const createPost = (newPost) => API.post('/posts/create', newPost);
 export const likePost = (id) => API.patch(`/posts/${id}/likePost`);
 export const updatePost = (id, updatedPost) => API.patch(`/posts/${id}`, updatedPost);
 export const deletePost = (id) => API.delete(`/posts/${id}`);
-
-export const signIn = (formData) => API.post('/user/signin', formData);
-export const signUp = (formData) => API.post('/user/signup', formData);
-// export const getId = (email) => API.post('/user/getid', email);

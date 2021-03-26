@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { Avatar, Button, Paper, Grid, Typography, Container } from "@material-ui/core";
-import { GoogleLogin } from 'react-google-login';
-import { useDispatch } from 'react-redux';
+import { Avatar, Button, Paper, Grid, Typography, Container, CircularProgress } from "@material-ui/core";
 import { useHistory, Link } from 'react-router-dom';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import Alert from '@material-ui/lab/Alert';
+
 import useStyles from './styles';
 import Input from './Input';
 import Icon from './icon';
-import { signin, signup } from '../../../actions/auth';
+import { useAuth } from "../../../contexts/AuthContext"
 
 const initialState = {
     firstName: '',
@@ -23,20 +23,30 @@ const Auth = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [isSignup, setIsSignup] = useState(false);
     const [formData, setFormData] = useState(initialState);
-    const dispatch = useDispatch();
     const history = useHistory();
+    const { signup, login, googleSignIn } = useAuth()
+    const [error, setError] = useState("")
+    const [loading, setLoading] = useState(false)
 
     const handleShowPassword = () => setShowPassword((prevShowPassword) => !prevShowPassword);
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
+
         if (isSignup) {
-            dispatch(signup(formData, history));
+            if (formData.password !== formData.confirmPassword) {
+                return setError("Passwords do not match");
+            }
+            signup(formData, setError, setLoading, history);
         }
         else {
-            dispatch(signin(formData, history));
+            login(formData, setError, setLoading, history);
         }
+    }
+
+    const handleGoogleSignIn = () => {
+        googleSignIn(setError, setLoading, history);
     }
 
     const handleChange = (e) => {
@@ -48,59 +58,43 @@ const Auth = () => {
         setShowPassword(false);
     }
 
-    const googleSuccess = async (res) => {
-        try {
-            dispatch(signin({
-                email: res?.profileObj?.email,
-                password: 'bbMgbCo6uL6XM4iwKZcFfNUszbMrlHaa6VePS6W1Yev12',
-                googleId: res?.profileObj?.googleId
-            }, history));
-        } catch (error) {
-            console.log(error);
-        }
-    }
-    const googleFailure = (res) => {
-        console.log(res);
-        console.log("Google Sign In was unsuccessful. Try Again Later");
+    if (loading) {
+        return (<Grid container justify="center" style={{ height: "100vh" }} alignContent="center">
+            <CircularProgress size={60} thickness={4.5} />
+        </Grid>)
     }
 
     return (
-        <Container component="main" maxWidth="xs">
-            <Paper className={classes.paper} elevation={3}>
-                <Avatar className={classes.avatar}>
-                    <LockOutlinedIcon />
-                </Avatar>
-                <Typography variant="h5">{isSignup ? "Sign Up" : "Sign In"}</Typography>
-                <form className={classes.form} onSubmit={handleSubmit}>
-                    <Grid container spacing={2}>
-                        {
-                            isSignup && (
-                                <>
-                                    <Input name="firstName" label="First Name" handleChange={handleChange} autoFocus half />
-                                    <Input name="lastName" label="Last Name" handleChange={handleChange} half />
-                                </>
-                            )
-                        }
-                        <Input name="email" label="Email Address" handleChange={handleChange} type="email" />
-                        <Input name="password" label="Password" handleChange={handleChange} type={showPassword ? "text" : "password"} handleShowPassword={handleShowPassword} />
-                        {isSignup && <Input name="confirmPassword" label="Repeat Password" handleChange={handleChange} type="password" />}
-                    </Grid>
-                    <Button type="submit" fullWidth variant="contained" color="primary" className={classes.submit}>{isSignup ? "Sign Up" : "Sign In"}</Button>
-                    {
-                        isSignup ? (
-                            <Button component={Link} to="/auth/googlesignup" className={classes.googleButton} color="primary" fullWidth startIcon={<Icon />} variant="contained" >Google Sign Up</Button>
-                        ) : (
-                            <GoogleLogin
-                                clientId="73172241162-j09pe7bqh7u8g5ld3b56aec4bp2clkun.apps.googleusercontent.com"
-                                render={(renderProps) => (
-                                    <Button className={classes.googleButton} color="primary" fullWidth onClick={renderProps.onClick} disabled={renderProps.disabled} startIcon={<Icon />} variant="contained" >Google Sign In</Button>
-                                )}
-                                onSuccess={googleSuccess}
-                                onFailure={googleFailure}
-                                cookiePolicy="single_host_origin"
-                            />
-                        )
-                    }
+        <>
+            {error && <Alert severity="error" onClose={() => { setError('') }}>{error}</Alert>}
+            <Container component="main" maxWidth="xs">
+                <Paper className={classes.paper} elevation={3}>
+                    <Avatar className={classes.avatar}>
+                        <LockOutlinedIcon />
+                    </Avatar>
+                    <Typography variant="h5">{isSignup ? "Sign Up" : "Sign In"}</Typography>
+                    <form className={classes.form} onSubmit={handleSubmit}>
+                        <Grid container spacing={2}>
+                            {
+                                isSignup && (
+                                    <>
+                                        <Input name="firstName" label="First Name" handleChange={handleChange} autoFocus half />
+                                        <Input name="lastName" label="Last Name" handleChange={handleChange} half />
+                                    </>
+                                )
+                            }
+                            <Input name="email" label="Email Address" handleChange={handleChange} type="email" />
+                            <Input name="password" label="Password" handleChange={handleChange} type={showPassword ? "text" : "password"} handleShowPassword={handleShowPassword} />
+                            {isSignup && <Input name="confirmPassword" label="Repeat Password" handleChange={handleChange} type="password" />}
+                        </Grid>
+                        <Button type="submit" fullWidth variant="contained" color="primary" className={classes.submit}>{isSignup ? "Sign Up" : "Sign In"}</Button>
+                    </form>
+                    <Button className={classes.googleButton} color="primary" fullWidth startIcon={<Icon />} variant="contained" onClick={handleGoogleSignIn} >Google Sign {isSignup ? "Up" : "In"}</Button>
+                    {!isSignup && <Grid container justify="flex-start">
+                        <Button component={Link} to="/forgot-password" href="#text-buttons" color="primary">
+                            Forgot Password?
+                        </Button>
+                    </Grid>}
                     <Grid container justify="flex-end" >
                         <Grid item>
                             <Button onClick={switchMode}>
@@ -108,9 +102,9 @@ const Auth = () => {
                             </Button>
                         </Grid>
                     </Grid>
-                </form>
-            </Paper>
-        </Container>
+                </Paper>
+            </Container>
+        </>
     )
 }
 
