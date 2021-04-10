@@ -22,17 +22,17 @@ const Home = () => {
     }, [])
 
     return (
-        <>
-        {error && <Alert severity="error" onClose={() => { setError('') }}>{error}</Alert>}
-            <Navbar />
-            <Grow in>
-                <Container>
-                    <Grid container justify="space-between" alignItems="stretch" spacing={3}>
-                        { matches ? <><FormFunc /><PostsFunc /></> : <><PostsFunc /><FormFunc /></>}
-                    </Grid>
-                </Container>
-            </Grow>
-        </>
+            <Container maxWidth="lg" >
+                {error && <Alert severity="error" onClose={() => { setError('') }}>{error}</Alert>}
+                <Navbar />
+                <Grow in>
+                    <Container>
+                        <Grid container justify="space-between" alignItems="stretch" spacing={3}>
+                            {matches ? <><FormFunc /><PostsFunc /></> : <><PostsFunc /><FormFunc /></>}
+                        </Grid>
+                    </Container>
+                </Grow>
+            </Container>
     )
 }
 

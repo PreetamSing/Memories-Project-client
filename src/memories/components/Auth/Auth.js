@@ -66,8 +66,9 @@ const Auth = () => {
 
     return (
         <>
+        <Alert severity="info">You need to authenticate to use the web app. Only your email address and Name would be used, just for the sake of identification.</Alert>
             {error && <Alert severity="error" onClose={() => { setError('') }}>{error}</Alert>}
-            <Container component="main" maxWidth="xs">
+            <Container component="main" maxWidth="xs" >
                 <Paper className={classes.paper} elevation={3}>
                     <Avatar className={classes.avatar}>
                         <LockOutlinedIcon />
@@ -104,7 +105,7 @@ const Auth = () => {
                     </Grid>
                 </Paper>
             </Container>
-        </>
+            </>
     )
 }
 

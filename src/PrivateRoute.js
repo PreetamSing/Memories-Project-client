@@ -13,7 +13,7 @@ export default function PrivateRoute({ component: Component, otherPath, bool, se
     <Route
       {...rest}
       render={props => {
-        return (!currentUser != !bool) ? <Component {...props} /> : <Redirect to={otherPath} />
+        return (!currentUser !== !bool) ? <Component {...props} /> : <Redirect to={otherPath} />
       }}
     ></Route>
   )
