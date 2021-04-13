@@ -39,6 +39,8 @@ export default makeStyles((theme) => ({
     width: 'auto',
     overflow: 'hidden',
     margin: '0px',
-    padding: '0px'
+    padding: '0px',
+    WebkitTransform: 'scaleX(-1)',
+    transform: 'scaleX(-1)'
   }
 }));

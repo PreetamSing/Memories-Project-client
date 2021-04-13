@@ -1,4 +1,3 @@
-//give up navigator.userMedia
 import React, { useState, useEffect } from 'react';
 import { createChat, webSocketURL } from '../api/index';
 import { Button, Nav, Navbar } from 'react-bootstrap';
@@ -13,6 +12,11 @@ export default function JoinChat() {
     const classes = useStyles();
     useEffect(() => {
         document.getElementById('video-call-div').style.display = 'none';
+        webSocket[0].onclose = (e) => {
+            webSocket.shift();
+            webSocket.push(new WebSocket(webSocketURL));
+            console.log(e);
+        }
     }, []);
     const [newMeetingId, setNewMeetingId] = useState('');
     const [error, setError] = useState('');
@@ -21,8 +25,8 @@ export default function JoinChat() {
     const [isVideo, setIsVideo] = useState(true);
 
     let peers = {};
-    const webSocket = new WebSocket(webSocketURL)
-    webSocket.onmessage = (event) => {
+    const webSocket = [new WebSocket(webSocketURL)]
+    webSocket[0].onmessage = (event) => {
         handleSignallingData(JSON.parse(event.data))
     }
 
@@ -77,7 +81,7 @@ export default function JoinChat() {
     function sendData(data) {
         data.username = username
         data.meetingId = meetingId
-        webSocket.send(JSON.stringify(data))
+        webSocket[0].send(JSON.stringify(data))
     }
 
     const addNewPeer = (partner) => {
@@ -129,7 +133,16 @@ export default function JoinChat() {
                 },
                 aspectRatio: 1.33333
             },
-            audio: true
+            audio: {
+                autoGainControl: false,
+                channelCount: 1,
+                echoCancellation: true,
+                latency: 0,
+                noiseSuppression: true,
+                sampleRate: 48000,
+                sampleSize: 16,
+                volume: 1.0
+            }
         }, (stream) => {
             localStream = stream;
             setLocalStreamState(localStream);
@@ -138,13 +151,13 @@ export default function JoinChat() {
             node.id = 'local-video';
             node.className = classes.video;
             node.setAttribute('autoplay', '');
-            node.setAttribute('muted', '');
+            node.muted = true;
             node.srcObject = localStream;
             parent.appendChild(node);
             sendUsername();
             window.addEventListener('beforeunload', () => {
                 // webSocket.onclose = function () {}; // disable onclose handler first
-                webSocket.close(1000, JSON.stringify({
+                webSocket[0].close(1000, JSON.stringify({
                     meetingId: meetingId,
                     username: username
                 }))
@@ -157,6 +170,7 @@ export default function JoinChat() {
 
     function createAndSendOffer(partner) {
         peers[partner].conn.createOffer((offer) => {
+            offer.sdp = offer.sdp.replace('useinbandfec=1', 'useinbandfec=1; stereo=1; maxaveragebitrate=510000');
             sendData({
                 type: "pass_offer",
                 address: partner,
@@ -171,6 +185,7 @@ export default function JoinChat() {
 
     const createAndSendAnswer = (partner) => {
         peers[partner].conn.createAnswer((answer) => {
+            answer.sdp = answer.sdp.replace('useinbandfec=1', 'useinbandfec=1; stereo=1; maxaveragebitrate=510000');
             peers[partner].conn.setLocalDescription(answer)
             sendData({
                 type: "pass_answer",
@@ -225,7 +240,7 @@ export default function JoinChat() {
                             id="username-input" /><br />
                         <input className={classes.input} placeholder="Enter Chat ID..."
                             type="text"
-                            id="meetingid-input" /><br />
+                            id="meetingid-input" autoComplete="off" /><br />
                         <Button variant="primary" onClick={joinChat}>Join Call</Button>
                     </Paper>
                 </Container>
