@@ -40,7 +40,11 @@ export default function Post({ post, setCurrentId }) {
             </div>
             {(currentUser?.uid === post?.creator) && (
                 <div className={classes.overlay2}>
-                    <Button style={{ color: "white" }} size="small" onClick={() => setCurrentId(post._id)}>
+                    <Button style={{ color: "white" }} size="small" onClick={() => {
+                        setCurrentId(post._id);
+                        document.body.scrollTop = 0; // For Safari
+                        document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+                    }}>
                         <MoreHorizIcon fontSize="default" />
                     </Button>
                 </div>

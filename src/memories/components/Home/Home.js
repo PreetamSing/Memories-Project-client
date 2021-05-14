@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Container, Grow, Grid } from "@material-ui/core";
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import Alert from '@material-ui/lab/Alert';
@@ -14,9 +14,9 @@ const Home = () => {
     const { getPosts } = usePost();
     const matches = useMediaQuery('(max-width:600px)');
 
-    const PostsFunc = () => <Grid item xs={12} sm={7}><Posts setCurrentId={setCurrentId} /></Grid>
-    const FormFunc = () => <Grid item xs={12} sm={4}><Form currentId={currentId} setCurrentId={setCurrentId} /></Grid>
-
+    const PostsFunc = useCallback(() => <Grid item xs={12} sm={7}><Posts setCurrentId={setCurrentId} /></Grid>, [Posts])
+    const FormFunc = useCallback(() => <Grid item xs={12} sm={4}><Form currentId={currentId} setCurrentId={setCurrentId} /></Grid>, [Form])
+    console.log("In Home.js");
     useEffect(() => {
         getPosts(setError);
     }, [])
