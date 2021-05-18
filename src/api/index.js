@@ -18,6 +18,7 @@ API.interceptors.request.use(async (req) => {
 });
 
 
+export const storeMessageToken = token => API.post(`/msgToken`, {token});
 export const fetchPosts = () => API.post('/posts');
 export const createPost = (newPost) => API.post('/posts/create', newPost);
 export const likePost = (id) => API.patch(`/posts/${id}/likePost`);

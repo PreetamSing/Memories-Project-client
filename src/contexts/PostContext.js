@@ -1,5 +1,7 @@
 import React, { useContext, useState } from "react";
 import * as api from '../api/index.js';
+import firebase from '../firebase';
+import "firebase/messaging"
 
 const PostContext = React.createContext()
 
@@ -9,6 +11,30 @@ export function usePost() {
 
 export function PostProvider({ children }) {
   const [posts, setPosts] = useState([])
+
+  async function sendMessagingToken() {
+    const messaging = firebase.messaging();
+
+    messaging.getToken({ vapidKey: "BIdHu5NyHNZE8GTdvBrtXE_mJKGK-J27D7QnhwkAbNnMCI2wwO3qXvfPfXugJdoZsT1pIK8KuKVWAMinA4kO9RU" })
+      .then(currentToken => {
+        if (currentToken) {
+          // Send the token to your server and update the UI if necessary
+          console.log(currentToken)
+          api.storeMessageToken(currentToken);
+          messaging.onMessage(payload => {
+            console.log("Message Received", payload);
+          })
+          // ...
+        } else {
+          // Show permission request UI
+          console.log('No registration token available. Request permission to generate one.');
+          // ...
+        }
+      }).catch((err) => {
+        console.log('An error occurred while retrieving token. ', err);
+        // ...
+      });
+  }
 
   const getPosts = async (setError) => {
     try {
@@ -24,7 +50,7 @@ export function PostProvider({ children }) {
     try {
       setError("");
       const { data } = await api.createPost(post);
-      setPosts(prevPosts => [ ...prevPosts, data ]);
+      setPosts(prevPosts => [...prevPosts, data]);
     } catch (error) {
       setError(error?.message);
     }
@@ -67,12 +93,13 @@ export function PostProvider({ children }) {
     createPost,
     updatePost,
     deletePost,
-    likePost
+    likePost,
+    sendMessagingToken
   }
 
   return (
     <PostContext.Provider value={value}>
-      { children }
+      { children}
     </PostContext.Provider>
   )
 }

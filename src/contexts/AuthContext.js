@@ -43,12 +43,12 @@ export function AuthProvider({ children }) {
   async function logout(setError, history) {
     setError("")
 
-        try {
-            await auth.signOut();
-            history.push("/auth")
-        } catch (error) {
-            setError(error?.message)
-        }
+    try {
+      await auth.signOut();
+      history.push("/auth")
+    } catch (error) {
+      setError(error?.message)
+    }
   }
 
   async function resetPassword(email, setSuccess, setError, setLoading) {
